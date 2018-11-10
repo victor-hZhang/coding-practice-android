@@ -25,3 +25,12 @@ allprojects {
 task clean(type: Delete) {
     delete rootProject.buildDir
 }
+
+ext {
+    // Sdk and tools
+
+    // App dependencies
+    supportLibraryVersion = '27.1.1'
+    retrolfitVersion = '2.4.0'
+    mockitoVersion = '1.10.19'
+}
