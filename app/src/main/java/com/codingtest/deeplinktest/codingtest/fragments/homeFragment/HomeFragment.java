@@ -5,21 +5,34 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.codingtest.deeplinktest.codingtest.R;
+import com.codingtest.deeplinktest.codingtest.apiService.model.Event;
+import com.codingtest.deeplinktest.codingtest.apiService.repository.EventsAPIRepository;
 
-public class HomeFragment extends Fragment {
+import java.util.List;
+
+public class HomeFragment extends Fragment implements HomeFragmentMVP.RequiredViewOps {
+    private SwipeRefreshLayout mSwipeRefreshLayout;
+    private RecyclerView mEventRecyclerView;
+    private EventListAdapter mEventAdapter;
+
+    private HomeFragmentMVP.PresenterOps presenter;
+
     public static HomeFragment newInstance() {
-        HomeFragment fragment = new HomeFragment();
-        return fragment;
+        return new HomeFragment();
     }
 
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
+        this.presenter = new HomePresenter(this, new EventsAPIRepository());
     }
 
     @Nullable
@@ -31,5 +44,61 @@ public class HomeFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        this.mEventRecyclerView = view.findViewById(R.id.event_list);
+
+        initRecyclerView();
+
+        initSwipeRefresh(view);
+
+        this.presenter.init();
+    }
+
+    private void initSwipeRefresh(@NonNull View view) {
+        //SwipeDown to Refresh
+        this.mSwipeRefreshLayout = view.findViewById(R.id.swipe_refresh_layout);
+        this.mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                presenter.onSwipeRefresh();
+            }
+        });
+    }
+
+    private void initRecyclerView() {
+        if (null == mEventRecyclerView) {
+            return;
+        }
+        //This will improve performance.
+        this.mEventRecyclerView.setHasFixedSize(true);
+
+        //Layout Manager
+        this.mEventRecyclerView.setLayoutManager(new GridLayoutManager(getContext(), 2));
+
+        //Adapter
+        this.mEventAdapter = new EventListAdapter();
+        this.mEventRecyclerView.setAdapter(mEventAdapter);
+    }
+
+    @Override
+    public void handleError(String errorMessage) {
+
+    }
+
+    @Override
+    public void showEvents(List<Event> events) {
+        if (null != this.mEventAdapter) {
+            this.mEventAdapter.updateData(events);
+        }
+    }
+
+    @Override
+    public void showLoading() {
+
+    }
+
+    @Override
+    public void dismissLoading() {
+
     }
 }
