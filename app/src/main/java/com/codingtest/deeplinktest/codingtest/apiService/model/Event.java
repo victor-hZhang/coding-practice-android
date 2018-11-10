@@ -1,12 +1,14 @@
 package com.codingtest.deeplinktest.codingtest.apiService.model;
 
+import android.support.annotation.NonNull;
+
 import com.google.gson.annotations.SerializedName;
 
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
-public class Event {
+public class Event implements Comparable<Event> {
     @SerializedName("name")
     public String name;
 
@@ -31,5 +33,14 @@ public class Event {
 
     public void setDateTime(Date datetime) {
         this.dateTime = datetime;
+    }
+
+    @Override
+    public int compareTo(@NonNull Event eventToCompare) {
+        if(null == getDateTime() || null == eventToCompare) {
+            return 0;
+        }
+
+        return getDateTime().compareTo(eventToCompare.getDateTime());
     }
 }

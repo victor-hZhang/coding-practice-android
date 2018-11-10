@@ -4,6 +4,8 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.GridLayoutManager;
@@ -51,7 +53,22 @@ public class HomeFragment extends Fragment implements HomeFragmentMVP.RequiredVi
 
         initSwipeRefresh(view);
 
+        initFloatingActionButton(view);
+
         this.presenter.init();
+    }
+
+    private void initFloatingActionButton(View view) {
+        FloatingActionButton floatingActionButton = view.findViewById(R.id.floating_action_button);
+
+        if(null != floatingActionButton){
+            floatingActionButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    presenter.floatingActionButtonOnClick();
+                }
+            });
+        }
     }
 
     private void initSwipeRefresh(@NonNull View view) {
@@ -82,7 +99,18 @@ public class HomeFragment extends Fragment implements HomeFragmentMVP.RequiredVi
 
     @Override
     public void handleError(String errorMessage) {
+        //Ideally you want wrap this around, just doing this as a demo,
+        //also normally you don't want to display the raw error message to customer.
+        //Please see ResponseSubscriber for detail.
+        if (isAdded() && null != getActivity()) {
+            View view = getActivity().findViewById(R.id.coordinatorLayout);
 
+            if (null != view) {
+                Snackbar snackbar = Snackbar.make(view, errorMessage, Snackbar.LENGTH_SHORT);
+                snackbar.getView().setBackgroundColor(getResources().getColor(R.color.roseRed));
+                snackbar.show();
+            }
+        }
     }
 
     @Override
@@ -94,11 +122,17 @@ public class HomeFragment extends Fragment implements HomeFragmentMVP.RequiredVi
 
     @Override
     public void showLoading() {
-
+        //Just borrowed SwipeRefreshLayout for quick loading animation.
+        //Could also use a ProgressDialog
+        if (null != mSwipeRefreshLayout) {
+            this.mSwipeRefreshLayout.setRefreshing(true);
+        }
     }
 
     @Override
     public void dismissLoading() {
-
+        if (null != mSwipeRefreshLayout) {
+            this.mSwipeRefreshLayout.setRefreshing(false);
+        }
     }
 }
