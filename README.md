@@ -9,3 +9,5 @@ Should be able to clone project and gradle build - build - run project with phon
 Using MVP as preferred pattern, 
 We use a slightly modified MVP with interactor here, waived interactor to make code a bit simpler.
 
+Screen support swipe down to refresh.
+Havn't particullarly handle orentation, it works could have been better.
