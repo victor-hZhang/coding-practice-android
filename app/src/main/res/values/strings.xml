@@ -1,3 +1,4 @@
 <resources>
-    <string name="app_name">Coding test</string>
+    <string name="app_name">Fun App</string>
+    <string name="appbar_scrolling_view_behavior" translatable="false">android.support.design.widget.AppBarLayout$ScrollingViewBehavior</string>
 </resources>
